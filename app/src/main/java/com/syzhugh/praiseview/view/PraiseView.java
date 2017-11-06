@@ -35,22 +35,23 @@ public class PraiseView extends View {
 
   private PointF mTopPointA;
   private PointF mTopPointB;
-  private PointF mTopPointC;
+  private PointF mTopPoint;
 
   private PointF mBottomPointA;
   private PointF mBottomPointB;
-  private PointF mBottomPointC;
+  private PointF mBottomPoint;
 
   private PointF mLeftPointA;
   private PointF mLeftPointB;
-  private PointF mLeftPointC;
+  private PointF mLeftPoint;
 
   private PointF mRightPointA;
   private PointF mRightPointB;
-  private PointF mRightPointC;
+  private PointF mRightPoint;
 
   private ValueAnimator mAnimator;
   private int mDuration;
+  private Path mHeartPath;
 
   public PraiseView(Context context) {
     this(context, null);
@@ -62,12 +63,27 @@ public class PraiseView extends View {
 
   public PraiseView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    mPaint = new Paint();
+    mCenterPoint = new PointF(540, 960);
     mRadius = 100;
     mCurrentRadius = mRadius;
-    mCenterPoint = new PointF(540, 960);
+
+    mPaint = new Paint();
     mAnimator = new ValueAnimator();
     mDuration = 300;
+
+    mHeartPath = new Path();
+    mTopPointA = new PointF();
+    mTopPointB = new PointF();
+    mTopPoint = new PointF();
+    mRightPointA = new PointF();
+    mRightPointB = new PointF();
+    mRightPoint = new PointF();
+    mBottomPointA = new PointF();
+    mBottomPointB = new PointF();
+    mBottomPoint = new PointF();
+    mLeftPointA = new PointF();
+    mLeftPointB = new PointF();
+    mLeftPoint = new PointF();
   }
 
   @Override
@@ -79,20 +95,25 @@ public class PraiseView extends View {
 
   private void drawHeart(Canvas canvas, float radius) {
     initControlPoint(radius);
-
     mPaint.setColor(mPraiseState == PRAISESTATE_NO ? Color.BLACK : Color.RED);
     mPaint.setStyle(mPraiseState == PRAISESTATE_NO ? Paint.Style.STROKE : Paint.Style.FILL);
     mPaint.setStrokeWidth(15);
     mPaint.setStrokeJoin(Paint.Join.ROUND);
     mPaint.setAntiAlias(true);
-    Path path = new Path();
-    path.moveTo(mTopPointB.x, mTopPointB.y);
-    path.cubicTo(mTopPointC.x, mTopPointC.y, mRightPointA.x, mRightPointA.y, mRightPointB.x, mRightPointB.y);
-    path.cubicTo(mRightPointC.x, mRightPointC.y, mBottomPointC.x, mBottomPointC.y, mBottomPointB.x, mBottomPointB.y);
-    path.cubicTo(mBottomPointA.x, mBottomPointA.y, mLeftPointC.x, mLeftPointC.y, mLeftPointB.x, mLeftPointB.y);
-    path.cubicTo(mLeftPointA.x, mLeftPointA.y, mTopPointA.x, mTopPointA.y, mTopPointB.x, mTopPointB.y);
-    path.close();
-    canvas.drawPath(path, mPaint);
+
+    mHeartPath.rewind();
+    mHeartPath.moveTo(mTopPoint.x, mTopPoint.y);
+    mHeartPath.cubicTo(mTopPointB.x, mTopPointB.y, mRightPointA.x, mRightPointA.y, mRightPoint.x,
+        mRightPoint.y);
+    mHeartPath
+        .cubicTo(mRightPointB.x, mRightPointB.y, mBottomPointB.x, mBottomPointB.y, mBottomPoint.x,
+            mBottomPoint.y);
+    mHeartPath.cubicTo(mBottomPointA.x, mBottomPointA.y, mLeftPointB.x, mLeftPointB.y, mLeftPoint.x,
+        mLeftPoint.y);
+    mHeartPath.cubicTo(mLeftPointA.x, mLeftPointA.y, mTopPointA.x, mTopPointA.y, mTopPoint.x,
+        mTopPoint.y);
+    mHeartPath.close();
+    canvas.drawPath(mHeartPath, mPaint);
   }
 
   private void showControllPoint(Canvas canvas) {
@@ -101,37 +122,37 @@ public class PraiseView extends View {
     mPaint.setAntiAlias(true);
     mPaint.setStyle(Paint.Style.FILL);
     canvas.drawPoint(mTopPointA.x, mTopPointA.y, mPaint);
+    canvas.drawPoint(mTopPoint.x, mTopPoint.y, mPaint);
     canvas.drawPoint(mTopPointB.x, mTopPointB.y, mPaint);
-    canvas.drawPoint(mTopPointC.x, mTopPointC.y, mPaint);
     canvas.drawPoint(mRightPointA.x, mRightPointA.y, mPaint);
+    canvas.drawPoint(mRightPoint.x, mRightPoint.y, mPaint);
     canvas.drawPoint(mRightPointB.x, mRightPointB.y, mPaint);
-    canvas.drawPoint(mRightPointC.x, mRightPointC.y, mPaint);
     canvas.drawPoint(mBottomPointA.x, mBottomPointA.y, mPaint);
+    canvas.drawPoint(mBottomPoint.x, mBottomPoint.y, mPaint);
     canvas.drawPoint(mBottomPointB.x, mBottomPointB.y, mPaint);
-    canvas.drawPoint(mBottomPointC.x, mBottomPointC.y, mPaint);
     canvas.drawPoint(mLeftPointA.x, mLeftPointA.y, mPaint);
+    canvas.drawPoint(mLeftPoint.x, mLeftPoint.y, mPaint);
     canvas.drawPoint(mLeftPointB.x, mLeftPointB.y, mPaint);
-    canvas.drawPoint(mLeftPointC.x, mLeftPointC.y, mPaint);
   }
 
   private void initControlPoint(float radius) {
     mOffset = c * radius;
 
-    mTopPointA = new PointF(-mOffset, -radius);
-    mTopPointB = new PointF(0, -radius * 0.5f);
-    mTopPointC = new PointF(mOffset, -radius);
+    mTopPointA.set(-mOffset, -radius);
+    mTopPointB.set(mOffset, -radius);
+    mTopPoint.set(0, -radius * 0.5f);
 
-    mRightPointA = new PointF(radius, -mOffset);
-    mRightPointB = new PointF(radius, 0);
-    mRightPointC = new PointF(radius * 0.9f, mOffset);
+    mRightPointA.set(radius, -mOffset);
+    mRightPointB.set(radius * 0.9f, mOffset);
+    mRightPoint.set(radius, 0);
 
-    mBottomPointA = new PointF(-mOffset, radius * 0.7f);
-    mBottomPointB = new PointF(0, radius);
-    mBottomPointC = new PointF(mOffset, radius * 0.7f);
+    mBottomPointA.set(-mOffset, radius * 0.7f);
+    mBottomPointB.set(mOffset, radius * 0.7f);
+    mBottomPoint.set(0, radius);
 
-    mLeftPointA = new PointF(-radius, -mOffset);
-    mLeftPointB = new PointF(-radius, 0);
-    mLeftPointC = new PointF(-radius * 0.9f, mOffset);
+    mLeftPointA.set(-radius, -mOffset);
+    mLeftPointB.set(-radius * 0.9f, mOffset);
+    mLeftPoint.set(-radius, 0);
   }
 
   @Override
