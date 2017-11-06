@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <declare-styleable name="PraiseView">
+    <attr format="color" name="praiseview_color_unpraised"/>
+    <attr format="color" name="praiseview_color_praised"/>
+    <attr format="integer" name="praiseview_duration"/>
+  </declare-styleable>
+
+</resources>
